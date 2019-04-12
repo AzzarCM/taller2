@@ -24,7 +24,6 @@ class coinAdapter(val items: List<infoCoins>) : RecyclerView.Adapter<coinAdapter
         holder.bind(items[position])
     }
 
-
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: infoCoins) = with(itemView) {
             tv_country.text = item.country

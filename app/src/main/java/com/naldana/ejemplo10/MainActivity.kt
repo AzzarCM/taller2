@@ -36,6 +36,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // TODO (9) Se asigna a la actividad la barra personalizada
         setSupportActionBar(toolbar)
 
+        fab.setOnClickListener { view ->
+            Snackbar.make(view, "Add coin", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
+        }
+
         // TODO (11) Permite administrar el DrawerLayout y el ActionBar
 
         // TODO (11.1) Implementa las caracteristicas recomendas
@@ -123,9 +128,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onPostExecute(result)
             initRecycler(lista)
             // TODO (10) Click Listener para el boton flotante
-            fab.setOnClickListener { view ->
-                initRecycler(lista)
-            }
         }
     }
 
@@ -177,6 +179,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             // TODO (14.3) Los Id solo los que estan escritos en el archivo de MENU
+            R.id.nav_all -> {
+                initRecycler(lista)
+            }
             R.id.nav_sv -> {
                 searchForCountry("El Salvador")
             }

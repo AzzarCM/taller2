@@ -5,9 +5,14 @@
       tools:showIn="navigation_view">
 
     <!-- TODO (3.4) Los grupos de menu pueden definirse  con la etiqueta group -->
-    <group android:checkableBehavior="none">
+    <group android:checkableBehavior="single">
 
         <!-- TODO (3.5) Los mienbros del menu necesitan ID, TITLE-->
+        <item
+                android:id="@+id/nav_all"
+                android:icon="@drawable/all"
+                android:checked="true"
+                android:title="All"/>
         <item
                 android:id="@+id/nav_sv"
                 android:icon="@drawable/country"
