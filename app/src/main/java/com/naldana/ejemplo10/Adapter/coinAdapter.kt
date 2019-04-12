@@ -29,7 +29,6 @@ class coinAdapter(val items: List<infoCoins>) : RecyclerView.Adapter<coinAdapter
         fun bind(item: infoCoins) = with(itemView) {
             tv_country.text = item.country
             tv_name.text = item.name
-            tv_value.text = item.value
         }
     }
 
