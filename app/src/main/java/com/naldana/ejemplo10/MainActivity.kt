@@ -1,16 +1,30 @@
 package com.naldana.ejemplo10
 
+import android.content.ClipData
+import android.os.AsyncTask
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.view.menu.MenuView
+import android.support.v7.widget.*
+import android.support.v7.widget.RecyclerView.LayoutManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
+import com.google.gson.Gson
+import com.naldana.ejemplo10.Adapter.coinAdapter
+import com.naldana.ejemplo10.Network.NetworkUtils
+import com.naldana.ejemplo10.model.infoAllCoin
+import com.naldana.ejemplo10.model.infoCoins
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import java.io.IOException
+import java.net.URL
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -21,14 +35,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         // TODO (9) Se asigna a la actividad la barra personalizada
         setSupportActionBar(toolbar)
-
-
-        // TODO (10) Click Listener para el boton flotante
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
-
 
         // TODO (11) Permite administrar el DrawerLayout y el ActionBar
 
@@ -62,6 +68,65 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
          * TODO (Instrucciones)Luego de leer todos los comentarios añada la implementación de RecyclerViewAdapter
          * Y la obtencion de datos para el API de Monedas
          */
+
+        //initRecycler()
+
+        FetchCoins().execute()
+    }
+
+    private lateinit var viewAdapter: coinAdapter
+    private lateinit var viewManager: LayoutManager
+
+    fun initRecycler(coins : ArrayList<infoCoins>) {
+
+        //viewManager = LinearLayoutManager(this)
+        if(this.resources.configuration.orientation == 2
+            || this.resources.configuration.orientation == 4){
+            viewManager = LinearLayoutManager(this)
+        } else{
+            viewManager = GridLayoutManager(this, 2)
+        }
+
+        viewAdapter = coinAdapter(coins)
+
+        recyclerview.apply {
+            setHasFixedSize(true)
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
+
+    }
+
+    private var lista : ArrayList<infoCoins> = ArrayList<infoCoins>()
+
+    private inner class FetchCoins() : AsyncTask<String, Void, String>() {
+        override fun doInBackground(vararg params: String?): String {
+            var url : URL = NetworkUtils.buiURL()
+            try {
+                var result : String = NetworkUtils.getResponseFromHttpUrl(url)
+                var gson : Gson = Gson()
+                var element : infoAllCoin = gson.fromJson(result, infoAllCoin::class.java)
+                for (i in 0 .. (element.datos.size-1)){
+                    var dato : infoCoins = infoCoins(element.datos.get(i).value.toString(),"Name", "Tyep ", "",
+                        false, "", "", element.datos.get(i).name.toString(),
+                        element.datos.get(i).country.toString(), 0)
+                    lista.add(dato)
+                }
+                return result
+            } catch (e : IOException){
+                e.printStackTrace()
+                return ""
+            }
+        }
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            initRecycler(lista)
+            // TODO (10) Click Listener para el boton flotante
+            fab.setOnClickListener { view ->
+                initRecycler(lista)
+            }
+        }
     }
 
 
@@ -94,28 +159,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    fun searchForCountry(country : String){
+        var listaS : ArrayList<infoCoins> = ArrayList<infoCoins>()
+        for (i in 0 .. (lista.size-1)){
+            if(lista.get(i).country.equals(country)){
+                var dato : infoCoins = infoCoins(lista.get(i).value.toString(),"Name", "Tyep ", "",
+                    false, "", "", lista.get(i).name.toString(),
+                    lista.get(i).country.toString(), 0)
+                listaS.add(dato)
+            }
+            initRecycler(listaS)
+        }
+    }
+
     // TODO (14.2) Funcion que recibe el ID del elemento tocado
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
             // TODO (14.3) Los Id solo los que estan escritos en el archivo de MENU
-            R.id.nav_camera -> {
-
+            R.id.nav_sv -> {
+                searchForCountry("El Salvador")
             }
-            R.id.nav_gallery -> {
-
+            R.id.nav_mx -> {
+                searchForCountry("Mexico")
             }
-            R.id.nav_slideshow -> {
-
+            R.id.nav_usa -> {
+                searchForCountry("USA")
             }
-            R.id.nav_manage -> {
-
+            R.id.nav_vn -> {
+                searchForCountry("Venezuela")
             }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
+            R.id.nav_gt -> {
+                searchForCountry("Guatemala")
             }
         }
 

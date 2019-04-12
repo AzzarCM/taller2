@@ -9,40 +9,40 @@ import java.util.*
 
 class NetworkUtils {
 
-    val COINS_API_BASE = "http://www.omdbapi.com/"
-    val TOKEN_API = "8b0b11f6"
+    companion object {
+        val COINS_API_BASE = "https://coinsapirestfulll.herokuapp.com/api/coin"
+        @JvmStatic fun buiURL() : URL{
+            var uri : Uri = Uri.parse(COINS_API_BASE).buildUpon().build()
 
-    fun buildtSearchUrl(movieName: String) : URL {
-        val builtUri = Uri.parse(COINS_API_BASE)
-            .buildUpon()
-            .appendQueryParameter("apikey", TOKEN_API)
-            .appendQueryParameter("t", movieName)
-            .build()
+            lateinit var url : URL
 
-        return try {
-            URL(builtUri.toString())
-        }catch (e : MalformedURLException){
-            URL("")
-        }
-    }
-
-    @Throws(IOException::class)
-    fun getResponseFromHttpUrl(url: URL):String{
-        val urlConnection = url.openConnection() as HttpURLConnection
-        try {
-            val `in` = urlConnection.inputStream
-
-            val scanner = Scanner(`in`)
-            scanner.useDelimiter("\\A")
-
-            val hasInput = scanner.hasNext()
-            return if(hasInput){
-                scanner.next()
-            }else{
-                ""
+            try {
+                url = URL(uri.toString())
+            } catch (e: MalformedURLException){
+                e.printStackTrace()
             }
-        }finally {
-            urlConnection.disconnect()
+
+            return url
+        }
+
+        @Throws(IOException::class)
+        @JvmStatic fun getResponseFromHttpUrl(url: URL):String{
+            val urlConnection = url.openConnection() as HttpURLConnection
+            try {
+                val `in` = urlConnection.inputStream
+
+                val scanner = Scanner(`in`)
+                scanner.useDelimiter("\\A")
+
+                val hasInput = scanner.hasNext()
+                return if(hasInput){
+                    scanner.next()
+                }else{
+                    ""
+                }
+            }finally {
+                urlConnection.disconnect()
+            }
         }
     }
 
