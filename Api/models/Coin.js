@@ -31,6 +31,10 @@ const coinSchema= new Schema({
     img:{   
         type: String,
         default: "Imagen url no disponible"
+    },
+    imgBanderaPais:{
+        type: String,
+        default: "Url de bandera no disponible"
     }
 })
 module.exports= mongoose.model('coin',coinSchema);

@@ -22,7 +22,8 @@ coinC.registrar=(function(req, res){
         year: req.body.year,
         review: req.body.review,
         isAvaliable:req.body.isAvaliable,
-        img: req.body.img
+        img: req.body.img,
+        imgBanderaPais: req.body.imgBanderaPais
     });
     obj.save(function(err){
         if(err){

@@ -1,3 +1,0 @@
-Subido a heroku:
-
-https://coinsapirestfulll.herokuapp.com/api/coin

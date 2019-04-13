@@ -174,10 +174,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         var listaS : ArrayList<infoCoins> = ArrayList<infoCoins>()
         for (i in 0 .. (lista.size-1)){
             if(lista.get(i).country.equals(country)){
-                var dato : infoCoins = infoCoins(lista.get(i).value.toString(),"Name", "Tyep ", "",
-                    false, "", "", lista.get(i).name.toString(),
-                    lista.get(i).country.toString(), 0)
-                listaS.add(dato)
+                listaS.add(lista.get(i))
             }
             initRecycler(listaS)
         }
