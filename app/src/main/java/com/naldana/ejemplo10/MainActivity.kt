@@ -1,6 +1,7 @@
 package com.naldana.ejemplo10
 
 import android.content.ClipData
+import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -79,6 +80,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         FetchCoins().execute()
     }
 
+    private fun coinItemClicked(item: infoCoins) {
+        val coinBundle = Bundle()
+        coinBundle.putParcelable("COIN", item)
+        startActivity(Intent(this, DetailCoin::class.java).putExtras(coinBundle))
+    }
+
     private lateinit var viewAdapter: coinAdapter
     private lateinit var viewManager: LayoutManager
 
@@ -92,7 +99,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             viewManager = GridLayoutManager(this, 2)
         }
 
-        viewAdapter = coinAdapter(coins)
+        viewAdapter = coinAdapter(coins, { coinItem: infoCoins -> coinItemClicked(coinItem) })
 
         recyclerview.apply {
             setHasFixedSize(true)
@@ -112,11 +119,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 var gson : Gson = Gson()
                 var element : infoAllCoin = gson.fromJson(result, infoAllCoin::class.java)
                 for (i in 0 .. (element.datos.size-1)){
-                    var dato : infoCoins = infoCoins(element.datos.get(i).value.toString(),"Name", "Tyep ", "",
-                        false, "", "", element.datos.get(i).name.toString(),
-                        element.datos.get(i).country.toString(), 0)
+                    var dato : infoCoins = infoCoins(element.datos.get(i).value.toString(),element.datos.get(i).value_us.toString(), element.datos.get(i).year,
+                        element.datos.get(i).review,
+                        element.datos.get(i).isAvaliable, element.datos.get(i).img, element.datos.get(i)._id, element.datos.get(i).name.toString(),
+                        element.datos.get(i).country, element.datos.get(i).__v, element.datos.get(i).imgBanderaPais)
                     lista.add(dato)
                 }
+
                 return result
             } catch (e : IOException){
                 e.printStackTrace()
