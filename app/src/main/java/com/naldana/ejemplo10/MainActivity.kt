@@ -1,9 +1,11 @@
 package com.naldana.ejemplo10
 
 import android.content.ClipData
+import android.content.ContentValues
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
+import android.provider.BaseColumns
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -19,6 +21,8 @@ import android.widget.Button
 import com.google.gson.Gson
 import com.naldana.ejemplo10.Adapter.coinAdapter
 import com.naldana.ejemplo10.Network.NetworkUtils
+import com.naldana.ejemplo10.data.Database
+import com.naldana.ejemplo10.data.DatabaseContract
 import com.naldana.ejemplo10.model.infoAllCoin
 import com.naldana.ejemplo10.model.infoCoins
 import kotlinx.android.synthetic.main.activity_main.*
@@ -28,8 +32,15 @@ import java.io.IOException
 import java.net.URL
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private var lista: ArrayList<infoCoins> = ArrayList<infoCoins>()
+    var dbHelper = Database(this)
 
-    var twoPane =  false
+    override fun onDestroy() {
+        dbHelper.close()
+        super.onDestroy()
+    }
+
+    var twoPane = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,10 +48,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // TODO (9) Se asigna a la actividad la barra personalizada
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Add coin", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
 
         // TODO (11) Permite administrar el DrawerLayout y el ActionBar
 
@@ -65,8 +72,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
 
         // TODO (20) Para saber si estamos en modo dos paneles
-        if (fragment_content != null ){
-            twoPane =  true
+        if (fragment_content != null) {
+            twoPane = true
         }
 
 
@@ -76,8 +83,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
          */
 
         //initRecycler()
+        fab.setOnClickListener { view ->
+            Snackbar.make(view, "Syncing con API y actualizando la base de datos sql", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
+            FetchCoins().execute()
+        }
+        try {
+            initRecycler(readCoins())
+        }finally {
+            Log.e("error", "Error al recuperar la tabla")
+        }
 
-        FetchCoins().execute()
     }
 
     private fun coinItemClicked(item: infoCoins) {
@@ -89,13 +105,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var viewAdapter: coinAdapter
     private lateinit var viewManager: LayoutManager
 
-    fun initRecycler(coins : ArrayList<infoCoins>) {
+    fun initRecycler(coins: ArrayList<infoCoins>) {
 
         //viewManager = LinearLayoutManager(this)
-        if(this.resources.configuration.orientation == 2
-            || this.resources.configuration.orientation == 4){
+        if (this.resources.configuration.orientation == 2
+            || this.resources.configuration.orientation == 4
+        ) {
             viewManager = LinearLayoutManager(this)
-        } else{
+        } else {
             viewManager = GridLayoutManager(this, 2)
         }
 
@@ -109,25 +126,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    private var lista : ArrayList<infoCoins> = ArrayList<infoCoins>()
 
     private inner class FetchCoins() : AsyncTask<String, Void, String>() {
         override fun doInBackground(vararg params: String?): String {
-            var url : URL = NetworkUtils.buiURL()
+            var url: URL = NetworkUtils.buiURL()
             try {
-                var result : String = NetworkUtils.getResponseFromHttpUrl(url)
-                var gson : Gson = Gson()
-                var element : infoAllCoin = gson.fromJson(result, infoAllCoin::class.java)
-                for (i in 0 .. (element.datos.size-1)){
-                    var dato : infoCoins = infoCoins(element.datos.get(i).value.toString(),element.datos.get(i).value_us.toString(), element.datos.get(i).year,
+                var result: String = NetworkUtils.getResponseFromHttpUrl(url)
+                var gson: Gson = Gson()
+                var element: infoAllCoin = gson.fromJson(result, infoAllCoin::class.java)
+                for (i in 0..(element.datos.size - 1)) {
+                    var dato: infoCoins = infoCoins(
+                        element.datos.get(i).value.toString(),
+                        element.datos.get(i).value_us.toString(),
+                        element.datos.get(i).year,
                         element.datos.get(i).review,
-                        element.datos.get(i).isAvaliable, element.datos.get(i).img, element.datos.get(i)._id, element.datos.get(i).name.toString(),
-                        element.datos.get(i).country, element.datos.get(i).__v, element.datos.get(i).imgBanderaPais)
+                        element.datos.get(i).isAvaliable,
+                        element.datos.get(i).img,
+                        element.datos.get(i).name.toString(),
+                        element.datos.get(i).country,
+                        element.datos.get(i).__v,
+                        element.datos.get(i).imgBanderaPais
+                    )
                     lista.add(dato)
                 }
 
                 return result
-            } catch (e : IOException){
+            } catch (e: IOException) {
                 e.printStackTrace()
                 return ""
             }
@@ -135,6 +159,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
+
+            val db = dbHelper.writableDatabase
+            for (coin in lista) {
+                val values = ContentValues().apply {
+                    put(DatabaseContract.CoinEntry.COLUMN_VALUE, coin.value)
+                    put(DatabaseContract.CoinEntry.COLUMN_VALUE_US, coin.value_us)
+                    put(DatabaseContract.CoinEntry.COLUMN_YEAR, coin.year)
+                    put(DatabaseContract.CoinEntry.COLUMN_REVIEW, coin.review)
+                    put(DatabaseContract.CoinEntry.COLUMN_ISAVALIABLE, coin.isAvaliable)
+                    put(DatabaseContract.CoinEntry.COLUMN_IMG, coin.img)
+                    //put(DatabaseContract.CoinEntry.COLUMN_ID, coin._id)
+                    put(DatabaseContract.CoinEntry.COLUMN_NAME, coin.name)
+                    put(DatabaseContract.CoinEntry.COLUMN_COUNTRY, coin.country)
+                    put(DatabaseContract.CoinEntry.COLUMN_V, coin.__v)
+                    put(DatabaseContract.CoinEntry.COLUMN_IMGBANDERAPAIS, coin.imgBanderaPais)
+
+                }
+                val newRowId = db?.insert(DatabaseContract.CoinEntry.TABLE_NAME, null, values)
+                if (newRowId != -1L) {
+                    //mAdapter.setPersonas(readPersonas())
+                }
+            }
+
             initRecycler(lista)
             // TODO (10) Click Listener para el boton flotante
         }
@@ -170,10 +217,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun searchForCountry(country : String){
-        var listaS : ArrayList<infoCoins> = ArrayList<infoCoins>()
-        for (i in 0 .. (lista.size-1)){
-            if(lista.get(i).country.equals(country)){
+    fun searchForCountry(country: String) {
+        var listaS: ArrayList<infoCoins> = ArrayList<infoCoins>()
+        for (i in 0..(lista.size - 1)) {
+            if (lista.get(i).country.equals(country)) {
                 listaS.add(lista.get(i))
             }
             initRecycler(listaS)
@@ -208,5 +255,59 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // TODO (15) Cuando se da click a un opcion del menu se cierra de manera automatica
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun readCoins(): ArrayList<infoCoins>{
+
+// TODO(13) Para obtener los datos almacenados, es necesario solicitar una instancia de lectura de la base de datos.
+        val db = dbHelper.readableDatabase
+
+        val projection = arrayOf(
+            BaseColumns._ID,
+            DatabaseContract.CoinEntry.COLUMN_VALUE,
+            DatabaseContract.CoinEntry.COLUMN_VALUE_US,
+            DatabaseContract.CoinEntry.COLUMN_YEAR,
+            DatabaseContract.CoinEntry.COLUMN_REVIEW,
+            DatabaseContract.CoinEntry.COLUMN_ISAVALIABLE,
+            DatabaseContract.CoinEntry.COLUMN_NAME,
+            DatabaseContract.CoinEntry.COLUMN_COUNTRY,
+            DatabaseContract.CoinEntry.COLUMN_V,
+            DatabaseContract.CoinEntry.COLUMN_IMGBANDERAPAIS,
+            DatabaseContract.CoinEntry.COLUMN_IMG
+        )
+
+        val sortOrder = "${DatabaseContract.CoinEntry.COLUMN_COUNTRY} ASC"
+
+        val cursor = db.query(
+            DatabaseContract.CoinEntry.TABLE_NAME, // nombre de la tabla
+            projection, // columnas que se devolverán
+            null, // Columns where clausule
+            null, // values Where clausule
+            null, // Do not group rows
+            null, // do not filter by row
+            sortOrder // sort order
+        )
+
+        var listaSQL: ArrayList<infoCoins> = ArrayList<infoCoins>()
+
+        with(cursor) {
+            while (moveToNext()) {
+                var coin = infoCoins(
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_VALUE)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_VALUE_US)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_YEAR)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_REVIEW)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_ISAVALIABLE)).toBoolean(),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_IMG)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_NAME)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_COUNTRY)),
+                    getInt(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_V)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_IMGBANDERAPAIS))
+                )
+
+                listaSQL.add(coin)
+            }
+        }
+        return listaSQL
     }
 }

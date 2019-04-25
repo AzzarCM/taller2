@@ -10,7 +10,6 @@ data class infoCoins (
     val review : String="N/A",
     val isAvaliable : Boolean=false,
     val img : String="N/A",
-    val _id: String="N/A",
     val name : String="N/A",
     val country: String="N/A",
     val __v : Int=0,
@@ -22,7 +21,6 @@ data class infoCoins (
         parcel.readString(),
         parcel.readString(),
         parcel.readByte() != 0.toByte(),
-        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -38,7 +36,6 @@ data class infoCoins (
         parcel.writeString(review)
         parcel.writeByte(if (isAvaliable) 1 else 0)
         parcel.writeString(img)
-        parcel.writeString(_id)
         parcel.writeString(name)
         parcel.writeString(country)
         parcel.writeInt(__v)
