@@ -3,6 +3,7 @@ package com.naldana.ejemplo10
 import android.content.ClipData
 import android.content.ContentValues
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.BaseColumns
@@ -100,21 +101,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity(Intent(this, DetailCoin::class.java).putExtras(coinBundle))
     }
 
+    private fun iniFragment(item: infoCoins){
+        var instance = FragmentSecond.newIntance(item)
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_content, instance).commit()
+    }
+
+    private fun coinItemClickedLand(item: infoCoins){
+        iniFragment(item)
+    }
+
     private lateinit var viewAdapter: coinAdapter
     private lateinit var viewManager: LayoutManager
 
     fun initRecycler(coins: ArrayList<infoCoins>) {
-
-        //viewManager = LinearLayoutManager(this)
+        Log.d("Hola", "Hi, hotlinsaz")
         if (this.resources.configuration.orientation == 2
             || this.resources.configuration.orientation == 4
         ) {
             viewManager = LinearLayoutManager(this)
+            viewAdapter = coinAdapter(coins, { coinItem: infoCoins -> coinItemClickedLand(coinItem) })
+            iniFragment(infoCoins())
         } else {
             viewManager = GridLayoutManager(this, 2)
+            viewAdapter = coinAdapter(coins, { coinItem: infoCoins -> coinItemClicked(coinItem) })
         }
-
-        viewAdapter = coinAdapter(coins, { coinItem: infoCoins -> coinItemClicked(coinItem) })
 
         recyclerview.apply {
             setHasFixedSize(true)
@@ -125,7 +135,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    private inner class FetchCoins() : AsyncTask<String, Void, String>() {
+    private inner class FetchCoins : AsyncTask<String, Void, String>() {
         override fun doInBackground(vararg params: String?): String {
             var url: URL = NetworkUtils.buiURL()
             lista.clear()

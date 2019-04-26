@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".FragmentSecond">
+
+    <android.support.design.widget.CoordinatorLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".DetailCoin">
+
+        <android.support.design.widget.AppBarLayout
+                android:id="@+id/appbarviewer"
+                android:layout_width="match_parent"
+                android:layout_height="256dp"
+                android:fitsSystemWindows="true">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                    android:id="@+id/collapsingtoolbarviewer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"
+                    app:collapsedTitleTextAppearance="@style/CollapsedAppBar"
+                    app:contentScrim="?attr/colorPrimaryDark"
+                    app:expandedTitleTextAppearance="@style/ExpandedAppBar"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                    app:layout_scrollInterpolator="@android:anim/decelerate_interpolator"
+                    app:title="Country"
+                    app:toolbarId="@id/toolbarviewer">
+
+                <ImageView
+                        android:id="@+id/app_bar_image_viewer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        app:layout_collapseMode="parallax"/>
+
+
+                <android.support.v7.widget.Toolbar
+                        android:id="@+id/toolbarviewer"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"/>
+            </android.support.design.widget.CollapsingToolbarLayout>
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <TextView
+
+                        android:text="Moneda"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="24sp"
+                        android:textColor="@color/color_black"
+                        android:id="@+id/tv_name" android:layout_marginTop="16dp"
+                        android:layout_marginLeft="16dp" android:layout_marginStart="16dp"/>
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Valor:"
+                            android:textSize="18sp"
+                            android:textColor="@color/color_black"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                    />
+                    <TextView
+                            android:id="@+id/tv_value"
+                            android:textSize="18sp"
+                            android:textColor="@color/color_black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/string_na"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                    />
+                </LinearLayout>
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Valor US:"
+                            android:textSize="18sp"
+                            android:textColor="@color/color_black"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                    />
+                    <TextView
+                            android:id="@+id/tv_us_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/string_na"
+                            android:textSize="18sp"
+                            android:textColor="@color/color_black"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                    />
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Año:"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:textSize="18sp"
+                            android:textColor="@color/color_black"
+                            android:layout_marginStart="16dp"
+                    />
+                    <TextView
+                            android:id="@+id/tv_year"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/string_na"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:textSize="18sp"
+                            android:textColor="@color/color_black"
+                            android:layout_marginStart="16dp"
+                    />
+                </LinearLayout>
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Disponibilidad:"
+                            android:layout_marginTop="16dp"
+                            android:textSize="18sp"
+                            android:textColor="@color/color_black"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                    />
+                    <TextView
+                            android:id="@+id/tv_is_available"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:textColor="@color/color_black"
+                            android:text="@string/string_na"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                    />
+                </LinearLayout>
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Review:"
+                            android:layout_marginTop="16dp"
+                            android:textSize="18sp"
+                            android:textColor="@color/color_black"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                    />
+                    <TextView
+                            android:id="@+id/tv_review"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/string_na"
+                            android:textSize="18sp"
+                            android:textColor="@color/color_black"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
+                    />
+                </LinearLayout>
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+    </android.support.design.widget.CoordinatorLayout>
+
+</FrameLayout>

@@ -12,4 +12,7 @@
     <string name="runtime_ex_string">asdfgfs</string>
     <string name="n_a_value">ajaber</string>
     <string name="string_na">N/A</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

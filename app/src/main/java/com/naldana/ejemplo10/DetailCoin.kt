@@ -12,22 +12,7 @@ class DetailCoin : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_coin)
         val reciever: infoCoins = intent?.extras?.getParcelable("COIN") ?: infoCoins()
-        init(reciever)
+        var instance = FragmentSecond.newIntance(reciever)
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_content, instance).commit()
     }
-
-    fun init(coin: infoCoins){
-        Glide.with(this)
-            .load(coin.imgBanderaPais)
-            .placeholder(R.drawable.ic_launcher_background)
-            .into(app_bar_image_viewer)
-        collapsingtoolbarviewer.title = coin.country
-        tv_name.text=coin.name
-        tv_value.text=coin.value
-        tv_us_value.text=coin.value_us
-        tv_year.text=coin.year
-        tv_is_available.text=coin.isAvaliable.toString()
-        tv_review.text=coin.review
-
-    }
-
 }

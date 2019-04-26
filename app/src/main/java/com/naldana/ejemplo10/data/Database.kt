@@ -48,7 +48,6 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         // TODO (10) Cuando la base de datos ya existe y se define una nueva versión, se deben ejecutar scripts de migración.
         db.execSQL(SQL_DELETE_ENTRIES) // Como esta base de datos se utilizará como caché, no nos interesa conservar los datos almacenados en la versión anterior.
         onCreate(db) // Se vuelve a crear la base.
-        Log.d("Hola", "Si entra we!!")
     }
 
     // TODO(11) Se definen en constantes, el nombre de la base de datos y la versión
