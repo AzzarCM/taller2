@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import android.util.Log
 
 // TODO(6) Se crea una cadena de texto con la instrucción de creación de tabla usando SQL.
 // TODO (6.1) El nombre de la tabla y el de las columnas se asignan según los datos definidos en el contrato.
@@ -47,6 +48,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         // TODO (10) Cuando la base de datos ya existe y se define una nueva versión, se deben ejecutar scripts de migración.
         db.execSQL(SQL_DELETE_ENTRIES) // Como esta base de datos se utilizará como caché, no nos interesa conservar los datos almacenados en la versión anterior.
         onCreate(db) // Se vuelve a crear la base.
+        Log.d("Hola", "Si entra we!!")
     }
 
     // TODO(11) Se definen en constantes, el nombre de la base de datos y la versión

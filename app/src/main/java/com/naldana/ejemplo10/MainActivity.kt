@@ -59,7 +59,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
-
         // TODO (12) Con el Listener Creado se asigna al  DrawerLayout
         drawer_layout.addDrawerListener(toggle)
 
@@ -75,7 +74,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (fragment_content != null) {
             twoPane = true
         }
-
 
         /*
          * TODO (Instrucciones)Luego de leer todos los comentarios añada la implementación de RecyclerViewAdapter
@@ -130,6 +128,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private inner class FetchCoins() : AsyncTask<String, Void, String>() {
         override fun doInBackground(vararg params: String?): String {
             var url: URL = NetworkUtils.buiURL()
+            lista.clear()
             try {
                 var result: String = NetworkUtils.getResponseFromHttpUrl(url)
                 var gson: Gson = Gson()
@@ -161,6 +160,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onPostExecute(result)
 
             val db = dbHelper.writableDatabase
+            dbHelper.onUpgrade(db, 0, 0)
             for (coin in lista) {
                 val values = ContentValues().apply {
                     put(DatabaseContract.CoinEntry.COLUMN_VALUE, coin.value)
@@ -233,7 +233,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             // TODO (14.3) Los Id solo los que estan escritos en el archivo de MENU
             R.id.nav_all -> {
-                initRecycler(lista)
+                initRecycler(readCoins())
             }
             R.id.nav_sv -> {
                 searchForCountry("El Salvador")
