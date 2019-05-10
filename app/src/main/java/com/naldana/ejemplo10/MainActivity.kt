@@ -93,6 +93,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Log.e("error", "Error al recuperar la tabla")
         }
 
+        if (readData("").size == 0){
+            FetchCoins().execute("")
+        }
+
     }
 
     private fun coinItemClicked(item: infoCoins) {
@@ -114,7 +118,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var viewManager: LayoutManager
 
     fun initRecycler(coins: ArrayList<infoCoins>) {
-        Log.d("Hola", "Hi, hotlinsaz")
         if (this.resources.configuration.orientation == 2
             || this.resources.configuration.orientation == 4
         ) {
@@ -197,6 +200,61 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private fun readData(search : String) : ArrayList<infoCoins> {
+        var dbBase = Database(this)
+        //Hace que la base de datos este en modo lectura.
+        val db = dbBase.readableDatabase
+
+        //Hace un objeto referente a la tabla, con un arrayList.
+        val projection = arrayOf(
+            BaseColumns._ID,
+            DatabaseContract.CoinEntry.COLUMN_VALUE,
+            DatabaseContract.CoinEntry.COLUMN_VALUE_US,
+            DatabaseContract.CoinEntry.COLUMN_YEAR,
+            DatabaseContract.CoinEntry.COLUMN_REVIEW,
+            DatabaseContract.CoinEntry.COLUMN_ISAVALIABLE,
+            DatabaseContract.CoinEntry.COLUMN_IMG,
+            DatabaseContract.CoinEntry.COLUMN_NAME,
+            DatabaseContract.CoinEntry.COLUMN_COUNTRY,
+            DatabaseContract.CoinEntry.COLUMN_V,
+            DatabaseContract.CoinEntry.COLUMN_IMGBANDERAPAIS
+        )
+
+        val whereS = "${DatabaseContract.CoinEntry.COLUMN_COUNTRY} like '${search}%'"
+
+        //Ejecuta la sentencia select para hacer la busqueda en la tabla.
+        val cursor = db.query(
+            DatabaseContract.CoinEntry.TABLE_NAME,
+            projection,
+            whereS,
+            null,
+            null,
+            null,
+            null
+        )
+
+        var lista = ArrayList<infoCoins>()
+
+        with(cursor) {
+            while (moveToNext()) {
+                var personList = infoCoins(
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_VALUE)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_VALUE_US)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_YEAR)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_REVIEW)),
+                    getInt(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_ISAVALIABLE)) > 0,
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_IMG)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_NAME)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_COUNTRY)),
+                    getInt(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_V)),
+                    getString(getColumnIndexOrThrow(DatabaseContract.CoinEntry.COLUMN_IMGBANDERAPAIS))
+                )
+                lista.add(personList)
+            }
+        }
+
+        return lista
+    }
 
     // TODO (16) Para poder tener un comportamiento Predecible
     // TODO (16.1) Cuando se presione el boton back y el menu este abierto cerralo
@@ -229,12 +287,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun searchForCountry(country: String) {
         var listaS: ArrayList<infoCoins> = ArrayList<infoCoins>()
-        for (i in 0..(lista.size - 1)) {
-            if (lista.get(i).country.equals(country)) {
-                listaS.add(lista.get(i))
-            }
-            initRecycler(listaS)
-        }
+        listaS = readData(country)
+        initRecycler(listaS)
     }
 
     // TODO (14.2) Funcion que recibe el ID del elemento tocado
